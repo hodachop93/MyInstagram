@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/camera_activity"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/camera_viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="11">
+
+    </android.support.v4.view.ViewPager>
+
+    <example.com.hop.myinstagram.utils.SlidingTabLayout
+        android:id="@+id/camera_sliding_tab"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/DarkBackgroundBar">
+
+
+    </example.com.hop.myinstagram.utils.SlidingTabLayout>
+
+
+</LinearLayout>

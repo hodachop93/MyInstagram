@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="@color/White" />
+            <size android:width="50dp"
+                android:height="50dp"/>
+        </shape>
+    </item>
+    <item
+        android:bottom="5dp"
+        android:left="5dp"
+        android:right="5dp"
+        android:top="5dp">
+        <shape android:shape="oval">
+            <solid android:color="@color/video_recorder_shutter_ring_default" />
+        </shape>
+    </item>
+    <item
+        android:bottom="15dp"
+        android:left="15dp"
+        android:right="15dp"
+        android:top="15dp">
+        <shape android:shape="oval">
+            <solid android:color="@color/video_recorder_shutter_ring" />
+        </shape>
+    </item>
+
+</layer-list>

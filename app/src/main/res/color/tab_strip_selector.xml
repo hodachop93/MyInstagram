@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--Text color when tab is selected-->
+    <item android:state_selected="true" android:color="@color/tab_indicator" />
+    <!--Text color when tab is focused-->
+    <item android:state_focused="true" android:color="@color/White" />
+    <!--Text color when tab is pressed-->
+    <item android:state_pressed="true" android:color="@color/White" />
+    <!--Text color when tab is unselected-->
+    <item android:state_selected="false" android:color="@color/White" />
+</selector>

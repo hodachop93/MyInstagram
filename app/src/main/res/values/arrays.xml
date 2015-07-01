@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="tabwidget_icon">
+        <item>@drawable/icon_home_white</item>
+        <item>@drawable/icon_search_white</item>
+        <item>@drawable/icon_camera</item>
+        <item>@drawable/icon_news_white</item>
+        <item>@drawable/icon_profile_white</item>
+    </string-array>
+</resources>

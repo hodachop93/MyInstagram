@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/topbar"
+        layout="@layout/top_bar_camera" />
+
+    <include
+        android:id="@+id/cameraPreview"
+        layout="@layout/surface_view"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/topbar"
+        android:layout_height="450dp"/>
+    />
+
+    <ImageView
+        android:id="@+id/camera_toggle"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginLeft="6dp"
+        android:layout_marginBottom="12dp"
+        android:layout_above="@+id/shutter_camera"
+        android:src="@drawable/camera_cameratoggle" />
+
+    <ImageView
+        android:id="@+id/camera_flash"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="6dp"
+        android:layout_above="@+id/shutter_camera"
+        android:layout_marginBottom="12dp"
+        android:src="@drawable/camera_flash_off" />
+    <include
+        android:id="@+id/shutter_camera"
+        layout="@layout/shutter_camera"
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_height="20dp"/>
+    />
+
+
+</RelativeLayout>
