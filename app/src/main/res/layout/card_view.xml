@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="#000000"
+    android:paddingLeft="6dp"
+    android:orientation="vertical"
+    android:id="@+id/card_view_container"
+    android:paddingRight="6dp">
+
+    <ImageView
+        android:id="@+id/img_preview"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginTop="32dp"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/filter0" />
+
+    <TextView android:id="@+id/title_filter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@color/White"
+        android:layout_below="@id/img_preview"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
+        android:text="Way 0 "/>
+
+    <!--Chú ý trong recycler view item, nếu ta vẽ đường thẳng bằng text view,
+    mà ko set text cho nó thì recycler view sẽ tự động xóa text view,
+    mặc dù text view ko có text trong các layout vẫn hiển thị bình thường
+    mà ko bị hủy-->
+
+    <ImageView android:id="@+id/indicator"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_alignParentBottom="true"
+        android:src="@color/tab_indicator"
+        android:visibility="invisible"
+        />
+</RelativeLayout>
+
+

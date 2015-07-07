@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <include
+        layout="@layout/top_bar_camera"/>
+
+    <ImageView
+        android:id="@+id/photo_viewer"
+        android:layout_width="match_parent"
+        android:layout_height="360dp"
+        android:background="#000000"/>
+
+    <include
+        layout="@layout/setting_row_photo"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:background="@color/Black"
+        android:id="@+id/recyler_view"/>
+</LinearLayout>
