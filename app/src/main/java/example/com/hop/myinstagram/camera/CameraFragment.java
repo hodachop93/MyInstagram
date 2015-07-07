@@ -1,5 +1,6 @@
 package example.com.hop.myinstagram.camera;
 
+import android.content.Intent;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.SensorManager;
@@ -30,6 +31,7 @@ public class CameraFragment extends Fragment {
     RelativeLayout cameraPreviewLayout;
     RelativeLayout shutterCamera;
     LinearLayout topbar;
+    ImageView changeCameraBtn, flashImgView;
 
     private OrientationEventListener mOrientationEventListener;
     private int orientationOfImage;
@@ -41,6 +43,14 @@ public class CameraFragment extends Fragment {
             int rotation = orientationOfImage + CameraPreview.getOrientationOfCamera();
             saveImageTask(data, rotation);
             resetCam();
+
+            Intent intent = new Intent(getActivity(), FilterPhotoActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putByteArray("data", data);
+            bundle.putInt("rotation", rotation);
+            intent.putExtra("ImagePackage", bundle);
+            startActivity(intent);
+
         }
     };
 
@@ -50,7 +60,7 @@ public class CameraFragment extends Fragment {
     }
 
     private void saveImageTask(byte[] data, int rotation) {
-        SaveImageTask task = new SaveImageTask(this.getActivity(), mCameraPreview);
+        SaveImageTask task = new SaveImageTask(this.getActivity());
         task.execute(data, rotation);
     }
 
@@ -66,6 +76,8 @@ public class CameraFragment extends Fragment {
         int statusBar_height = getStatusBarHeight();
         View rootView = inflater.inflate(R.layout.photo_camera_fragment, null, false);
 
+        flashImgView = (ImageView) rootView.findViewById(R.id.camera_flash);
+
         topbar = (LinearLayout) rootView.findViewById(R.id.topbar);
         RelativeLayout.LayoutParams topbarLayoutParams = (RelativeLayout.LayoutParams) topbar.getLayoutParams();
 
@@ -80,6 +92,10 @@ public class CameraFragment extends Fragment {
 
         TextView txtView = (TextView) rootView.findViewById(R.id.title);
         txtView.setText("PHOTO");
+
+        ImageView left_navigation = (ImageView) rootView.findViewById(R.id.left_navigation);
+        left_navigation.setImageResource(R.drawable.nav_cancel);
+
         layout = (FrameLayout) rootView.findViewById(R.id.layout_camera);
 
         // Create camera preview instance annd display it
@@ -89,18 +105,17 @@ public class CameraFragment extends Fragment {
         mCameraPreview.setKeepScreenOn(true);
 
         btnCapture = (ImageView) rootView.findViewById(R.id.btn_capture);
+
+        return rootView;
+    }
+
+    private void initialize() {
         btnCapture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mCamera.takePicture(null, null, mPicture);
             }
         });
-        return rootView;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
         mCamera = getCameraInstance();
         mCamera.startPreview();
         mCameraPreview.setCamera(mCamera);
@@ -119,7 +134,32 @@ public class CameraFragment extends Fragment {
             return;
         }
 
+        flashImgView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (flashImgView.isSelected()){
+                    flashImgView.setSelected(false);
+                    mCameraPreview.turnOffFlash();
+                } else{
+                    flashImgView.setSelected(true);
+                    mCameraPreview.turnOnFlash();
+                }
+            }
+        });
 
+        //Kiem tra tinh trang flash khi resume
+        if (flashImgView.isSelected()){
+            mCameraPreview.turnOnFlash();
+
+        } else{
+            mCameraPreview.turnOffFlash();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        initialize();
     }
 
     private int round(int orientation) {

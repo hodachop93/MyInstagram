@@ -7,4 +7,13 @@
         <item>@drawable/icon_news_white</item>
         <item>@drawable/icon_profile_white</item>
     </string-array>
+
+    <string-array name="filter_array_preview">
+        <item>@drawable/filter0</item>
+        <item>@drawable/filter1</item>
+        <item>@drawable/filter2</item>
+        <item>@drawable/filter3</item>
+    </string-array>
+
+
 </resources>

@@ -38,4 +38,8 @@
         </RelativeLayout>
 
     </RelativeLayout>
+
+    <include
+        android:id="@+id/content"
+        layout="@layout/content_home_activity" />
 </LinearLayout>

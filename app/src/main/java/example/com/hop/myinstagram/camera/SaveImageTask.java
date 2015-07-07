@@ -23,12 +23,12 @@ public class SaveImageTask extends AsyncTask<Object, Void, Void> {
 
 
     private Context mContext;
-    private CameraPreview mCameraPreview;
+    //private CameraPreview mCameraPreview;
     private int rotationOfImage;
 
-    public SaveImageTask(Context mContext, CameraPreview mCameraPreview) {
+    public SaveImageTask(Context mContext) {
         this.mContext = mContext;
-        this.mCameraPreview = mCameraPreview;
+        //this.mCameraPreview = mCameraPreview;
     }
 
     @Override
@@ -45,11 +45,23 @@ public class SaveImageTask extends AsyncTask<Object, Void, Void> {
             String fileName = String.format("%d.jpg", System.currentTimeMillis());
 
             Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
+
+            /*//Phan nay thua
+            ByteBuffer buffer = ByteBuffer.allocate(bmp.getByteCount());
+            bmp.copyPixelsToBuffer(buffer);
+            byte[] arra = buffer.array();
+
+            Buffer buffer1 = ByteBuffer.wrap(arra);
+            Bitmap newbmp = Bitmap.createBitmap(bmp.getWidth(), bmp.getHeight(), Bitmap.Config.ARGB_8888);
+            newbmp.copyPixelsFromBuffer(buffer1);*/
+
+            //Dang test loi o tren
             Bitmap rotatedBmp = rotateImageIfRequired(bmp);
 
             File outFile = new File(dir, fileName);
             FileOutputStream fileOutputStream = new FileOutputStream(outFile);
             rotatedBmp.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+
 
             Log.d(TAG, "onPictureTaken - wrote bytes: " + data.length + " to " + outFile.getAbsolutePath());
 

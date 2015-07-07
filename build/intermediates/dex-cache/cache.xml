@@ -2,11 +2,18 @@
 <items version="2" >
 
     <item
-        jar="C:\Users\Hop\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\22.2.0\support-annotations-22.2.0.jar"
+        jar="D:\Internship_AsianTech\MyInstagram\app\build\intermediates\exploded-aar\com.android.support\support-v4\22.2.0\jars\libs\internal_impl-22.2.0.jar"
         jumboMode="false"
         revision="22.0.1"
-        sha1="66b42a1f3eb7676070b7ef7f14b603483aecbee1">
-        <dex dex="D:\Internship_AsianTech\MyInstagram\app\build\intermediates\pre-dexed\debug\support-annotations-22.2.0-e47d333a51fcae5a4a0983f8fbb205aa548c987d.jar" />
+        sha1="57f2ab85c164ff1676ec64dee787981c046fab79">
+        <dex dex="D:\Internship_AsianTech\MyInstagram\app\build\intermediates\pre-dexed\debug\internal_impl-22.2.0-223028c08adecdb7cccdfe28ad9f66a87f883ac8.jar" />
+    </item>
+    <item
+        jar="D:\Internship_AsianTech\MyInstagram\app\build\intermediates\exploded-aar\com.android.support\recyclerview-v7\22.2.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="5b37cf49773f7f17aca9830efd3053b0cac56728">
+        <dex dex="D:\Internship_AsianTech\MyInstagram\app\build\intermediates\pre-dexed\debug\classes-e974222e594e8d70d149781b6043ada7a22151e7.jar" />
     </item>
     <item
         jar="D:\Internship_AsianTech\MyInstagram\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\22.2.0\jars\classes.jar"
@@ -16,6 +23,13 @@
         <dex dex="D:\Internship_AsianTech\MyInstagram\app\build\intermediates\pre-dexed\debug\classes-c04b6aa8c7408e4d1df2ee0240d6f4fbaae0d175.jar" />
     </item>
     <item
+        jar="D:\Internship_AsianTech\MyInstagram\app\build\intermediates\exploded-aar\se.emilsjolander\stickylistheaders\2.7.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="3bdf77dbe58e0ec53a0178de532372e7c00859b9">
+        <dex dex="D:\Internship_AsianTech\MyInstagram\app\build\intermediates\pre-dexed\debug\classes-9d06a823f7456e0c8a43d7fa5197e60df03bf314.jar" />
+    </item>
+    <item
         jar="D:\Internship_AsianTech\MyInstagram\app\build\intermediates\exploded-aar\com.android.support\support-v4\22.2.0\jars\classes.jar"
         jumboMode="false"
         revision="22.0.1"
@@ -23,11 +37,18 @@
         <dex dex="D:\Internship_AsianTech\MyInstagram\app\build\intermediates\pre-dexed\debug\classes-b5eedb3d827940c3341c187228c57c879d994588.jar" />
     </item>
     <item
-        jar="D:\Internship_AsianTech\MyInstagram\app\build\intermediates\exploded-aar\com.android.support\support-v4\22.2.0\jars\libs\internal_impl-22.2.0.jar"
+        jar="D:\Internship_AsianTech\MyInstagram\app\build\intermediates\exploded-aar\com.android.support\cardview-v7\22.2.0\jars\classes.jar"
         jumboMode="false"
         revision="22.0.1"
-        sha1="57f2ab85c164ff1676ec64dee787981c046fab79">
-        <dex dex="D:\Internship_AsianTech\MyInstagram\app\build\intermediates\pre-dexed\debug\internal_impl-22.2.0-223028c08adecdb7cccdfe28ad9f66a87f883ac8.jar" />
+        sha1="97f7e239e86ef994de894818fdd8a71d2e89d6aa">
+        <dex dex="D:\Internship_AsianTech\MyInstagram\app\build\intermediates\pre-dexed\debug\classes-f38fc834db11f68a9a8c92cfd94856b0237f8d60.jar" />
+    </item>
+    <item
+        jar="C:\Users\Hop\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\22.2.0\support-annotations-22.2.0.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="66b42a1f3eb7676070b7ef7f14b603483aecbee1">
+        <dex dex="D:\Internship_AsianTech\MyInstagram\app\build\intermediates\pre-dexed\debug\support-annotations-22.2.0-e47d333a51fcae5a4a0983f8fbb205aa548c987d.jar" />
     </item>
 
 </items>

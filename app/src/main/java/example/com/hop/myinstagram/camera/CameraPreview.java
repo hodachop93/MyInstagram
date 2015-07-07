@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.List;
@@ -25,6 +26,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private List<Size> mSupportedPictureSizes;
     private Context mContext;
     private static int orientation;
+    private List<String> supportedFlashModes;
 
 
     public CameraPreview(Context context, Camera camera) {
@@ -83,6 +85,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             if (mCamera != null) {
                 mCamera.setPreviewDisplay(holder);
                 setCameraDisplayOrientation((Activity) mContext, 0, mCamera);
+                getFlashSupported();
             }
         } catch (IOException exception) {
             Log.e(TAG, "IOException caused by setPreviewDisplay()", exception);
@@ -146,6 +149,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     /**
      * Chú ý: Vì camera của máy thường nằm ngang nên width > height, do đó nếu ứng dụng của ta là portrait thì
      * width preview > height preview ==> khi truyền vào thì ta sẽ truyền thành w = height preview, h = width preview
+     *
      * @param sizes
      * @param w
      * @param h
@@ -187,6 +191,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     /**
      * Chú ý: Vì camera của máy thường nằm ngang nên width > height, do đó nếu ứng dụng của ta là portrait thì
      * width preview > height preview ==> khi truyền vào thì ta sẽ truyền thành w = height preview, h = width preview
+     *
      * @param sizes
      * @param w
      * @param h
@@ -262,7 +267,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
     }
 
-    public static int getOrientationOfCamera(){
+    public static int getOrientationOfCamera() {
         return orientation;
     }
 
@@ -272,6 +277,37 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         // Surface will be destroyed when we return, so stop the preview.
         if (mCamera != null) {
             mCamera.stopPreview();
+        }
+    }
+
+    private void getFlashSupported() {
+        Camera.Parameters parameters = mCamera.getParameters();
+        supportedFlashModes = parameters.getSupportedFlashModes();
+    }
+
+    public void turnOffFlash() {
+        if (supportedFlashModes == null)
+            Toast.makeText(mContext, "Flash Off is not supported on this device", Toast.LENGTH_SHORT).show();
+        else{
+            //Tat flash neu duoc
+            if (supportedFlashModes.contains(Camera.Parameters.FLASH_MODE_OFF)){
+                Camera.Parameters parameters = mCamera.getParameters();
+                parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                mCamera.setParameters(parameters);
+            }
+        }
+    }
+
+    public void turnOnFlash() {
+        if (supportedFlashModes == null)
+            Toast.makeText(mContext, "Flash On is not supported on this device", Toast.LENGTH_SHORT).show();
+        else{
+            //Bat flash neu duoc
+            if (supportedFlashModes.contains(Camera.Parameters.FLASH_MODE_ON)){
+                Camera.Parameters parameters = mCamera.getParameters();
+                parameters.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
+                mCamera.setParameters(parameters);
+            }
         }
     }
 }

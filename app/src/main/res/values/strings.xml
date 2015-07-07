@@ -3,4 +3,15 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string-array name="filter_array_titles">
+        <item>Black</item>
+        <item>Brightness</item>
+        <item>Red</item>
+        <item>Green</item>
+        <item>Blue</item>
+        <item>Grayscale</item>
+        <item>Contrast</item>
+        <item>Round Corner</item>
+        <item>Water Mark</item>
+      </string-array>
 </resources>
