@@ -1,6 +1,7 @@
 package example.com.hop.myinstagram.camera;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -25,11 +26,17 @@ public class ApplyEffectImageTask extends AsyncTask<Integer, Bitmap, Void> {
     private Activity mActivity;
     private ImageView mImgView;
     private Bitmap mOrigionalImage;
+    private ProgressDialog dialog;
 
     public ApplyEffectImageTask(Activity mActivity, ImageView mImgView, Bitmap mOrigionalImage) {
         this.mActivity = mActivity;
         this.mImgView = mImgView;
         this.mOrigionalImage = mOrigionalImage;
+    }
+
+    @Override
+    protected void onPreExecute() {
+        showDialog();
     }
 
     @Override
@@ -82,5 +89,21 @@ public class ApplyEffectImageTask extends AsyncTask<Integer, Bitmap, Void> {
         Bitmap bmp = values[0];
         if (bmp != null)
             mImgView.setImageBitmap(bmp);
+    }
+
+    private void showDialog() {
+        dialog = new ProgressDialog(mActivity);
+        dialog.setTitle("Loading...");
+        dialog.setCancelable(false);
+        dialog.show();
+    }
+
+    @Override
+    protected void onPostExecute(Void aVoid) {
+        hideDialog();
+    }
+
+    private void hideDialog(){
+        dialog.dismiss();
     }
 }

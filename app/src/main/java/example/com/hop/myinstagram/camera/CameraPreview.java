@@ -2,16 +2,26 @@ package example.com.hop.myinstagram.camera;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Matrix;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.hardware.Camera;
+import android.hardware.Camera.Face;
+import android.hardware.Camera.FaceDetectionListener;
 import android.hardware.Camera.Size;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.RelativeLayout;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+
+import example.com.hop.myinstagram.R;
 
 /**
  * Created by Hop on 26/06/2015.
@@ -27,6 +37,17 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private Context mContext;
     private static int orientation;
     private List<String> supportedFlashModes;
+    private Face[] detectedFaces;
+    private DrawingView drawingView;
+    private RelativeLayout mCameraPreview;
+
+    private FaceDetectionListener faceDetectionListener;
+    private Camera.AutoFocusCallback autoFocusCallback;
+    
+
+    private float focusAreaSize = FOCUS_AREA_SIZE;
+
+    public static final float FOCUS_AREA_SIZE = 20f;
 
 
     public CameraPreview(Context context, Camera camera) {
@@ -40,7 +61,10 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         mSurfaceHolder.addCallback(this);
         // deprecated setting, but required on Android versions prior to 3.0
         mSurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+
+
     }
+
 
     public void setCamera(Camera camera) {
         mCamera = camera;
@@ -49,16 +73,125 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             mSupportedPictureSizes = mCamera.getParameters().getSupportedPictureSizes();
             requestLayout();
 
-            // get Camera parameters
+            Activity mActivity = (Activity) mContext;
+            mCameraPreview = (RelativeLayout) mActivity.findViewById(R.id.cameraPreview);
+            if (drawingView == null) {
+                drawingView = new DrawingView(mContext);
+                mCameraPreview.addView(drawingView);
+            }
+
+
+            drawingView.invalidate();
+
+            createTouchToFocus();
+            createFaceDetection();
+
+            mCamera.startFaceDetection();
+            /*// get Camera parameters
             Camera.Parameters params = mCamera.getParameters();
             List<String> focusModes = params.getSupportedFocusModes();
+
+            //Set focus mode is auto focus
             if (focusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
                 // set the focus mode
                 params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
                 // set Camera parameters
                 mCamera.setParameters(params);
-            }
+            }*/
+            Log.d(TAG, "setCamera duoc goi");
         }
+    }
+
+    private void createTouchToFocus() {
+        autoFocusCallback = new Camera.AutoFocusCallback() {
+            @Override
+            public void onAutoFocus(boolean success, Camera camera) {
+                if (success) {
+                    drawingView.setFocusFinished(true);
+                    drawingView.invalidate();
+                    WaitTurnOffFocusTask task = new WaitTurnOffFocusTask(drawingView);
+                    task.execute();
+                }
+            }
+        };
+
+        mCameraPreview.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                drawingView.setOnTouch(true);
+                drawingView.setFocusFinished(false);
+                drawingView.setAfterFocus(false);
+                float x = event.getX();
+                float y = event.getY();
+
+                mCamera.cancelAutoFocus();
+
+                Rect focusRect = calculateTapArea(event.getX(), event.getY(), 1f);
+                Rect meteringRect = calculateTapArea(event.getX(), event.getY(), 1.5f);
+
+                Camera.Parameters params = mCamera.getParameters();
+
+                List<Camera.Area> focusList = new ArrayList<Camera.Area>();
+                focusList.add(new Camera.Area(focusRect, 1000));
+
+                List<Camera.Area> meteringList = new ArrayList<Camera.Area>();
+                meteringList.add(new Camera.Area(meteringRect, 1000));
+
+                params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+                params.setFocusAreas(focusList);
+                params.setMeteringAreas(meteringList);
+
+                mCamera.setParameters(params);
+                mCamera.autoFocus(autoFocusCallback);
+
+                drawingView.setCoordinate(x, y);
+                drawingView.invalidate();
+                return true;
+            }
+        });
+    }
+
+    private void createFaceDetection() {
+        //Khoi tao FaceDetectionListener
+        faceDetectionListener = new FaceDetectionListener() {
+            @Override
+            public void onFaceDetection(Face[] faces, Camera camera) {
+                if (faces.length == 0) {
+                    drawingView.setHaveFace(false);
+                } else {
+                    drawingView.setHaveFace(true);
+                    drawingView.setDetectedFaces(faces);
+                    detectedFaces = faces;
+
+                    //Set focus area using the first detected face
+                    List<Camera.Area> focusList = new ArrayList<Camera.Area>();
+                    for (int i = 0; i < detectedFaces.length; i++) {
+                        Camera.Area face = new Camera.Area(faces[i].rect, 1);
+                        focusList.add(face);
+                    }
+                        /*Camera.Area firstFace = new Camera.Area(faces[0].rect, 1);
+                        focusList.add(firstFace);*/
+
+                    Camera.Parameters params = mCamera.getParameters();
+                    int maxface = params.getMaxNumDetectedFaces();
+                    int maxFocus = params.getMaxNumFocusAreas();
+                    int maxMetering = params.getMaxNumMeteringAreas();
+
+
+                    if (params.getMaxNumFocusAreas() > 0)
+                        params.setFocusAreas(focusList);
+
+                    List<Camera.Area> meteringList = new ArrayList<Camera.Area>();
+                    meteringList.add(new Camera.Area(faces[0].rect, 1));
+                    if (params.getMaxNumMeteringAreas() > 0)
+                        params.setMeteringAreas(meteringList);
+
+                    mCamera.setParameters(params);
+
+                }
+                drawingView.invalidate();
+            }
+        };
     }
 
 
@@ -86,6 +219,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                 mCamera.setPreviewDisplay(holder);
                 setCameraDisplayOrientation((Activity) mContext, 0, mCamera);
                 getFlashSupported();
+                mCamera.setFaceDetectionListener(faceDetectionListener);
             }
         } catch (IOException exception) {
             Log.e(TAG, "IOException caused by setPreviewDisplay()", exception);
@@ -106,6 +240,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         // stop preview before making changes
         try {
             mCamera.stopPreview();
+            mCamera.stopFaceDetection();
             if (mCamera != null) {
                 Camera.Parameters parameters = mCamera.getParameters();
                 int widthPreview, heightPreview, widthPicture, heightPicture;
@@ -138,7 +273,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         try {
             mCamera.setPreviewDisplay(mSurfaceHolder);
             mCamera.startPreview();
-
+            //mCamera.autoFocus(autoFocusCallback);
+            mCamera.startFaceDetection();
         } catch (Exception e) {
             Log.d(TAG, "Error starting camera preview: " + e.getMessage());
         }
@@ -277,6 +413,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         // Surface will be destroyed when we return, so stop the preview.
         if (mCamera != null) {
             mCamera.stopPreview();
+            mCamera.stopFaceDetection();
         }
     }
 
@@ -286,11 +423,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     }
 
     public void turnOffFlash() {
-        if (supportedFlashModes == null)
-            Toast.makeText(mContext, "Flash Off is not supported on this device", Toast.LENGTH_SHORT).show();
-        else{
+        if (supportedFlashModes != null) {
             //Tat flash neu duoc
-            if (supportedFlashModes.contains(Camera.Parameters.FLASH_MODE_OFF)){
+            if (supportedFlashModes.contains(Camera.Parameters.FLASH_MODE_OFF)) {
                 Camera.Parameters parameters = mCamera.getParameters();
                 parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
                 mCamera.setParameters(parameters);
@@ -299,15 +434,154 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     }
 
     public void turnOnFlash() {
-        if (supportedFlashModes == null)
-            Toast.makeText(mContext, "Flash On is not supported on this device", Toast.LENGTH_SHORT).show();
-        else{
+        if (supportedFlashModes != null) {
             //Bat flash neu duoc
-            if (supportedFlashModes.contains(Camera.Parameters.FLASH_MODE_ON)){
+            if (supportedFlashModes.contains(Camera.Parameters.FLASH_MODE_ON)) {
                 Camera.Parameters parameters = mCamera.getParameters();
                 parameters.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
                 mCamera.setParameters(parameters);
             }
         }
     }
+
+    /**
+     * Convert touch position x:y to {@link Camera.Area} position -1000:-1000 to 1000:1000.
+     */
+    private Rect calculateTapArea(float x, float y, float coefficient) {
+
+        int areaSize = Float.valueOf(focusAreaSize * coefficient).intValue();
+
+        int left = clamp((int) x - areaSize / 2, 0, mCameraPreview.getWidth() - areaSize);
+        int top = clamp((int) y - areaSize / 2, 0, mCameraPreview.getHeight() - areaSize);
+
+        RectF rectF = new RectF(left, top, left + areaSize, top + areaSize);
+
+        int width = mCameraPreview.getWidth();
+        int height = mCameraPreview.getHeight();
+        Matrix matrix = new Matrix();
+        matrix.postRotate(orientation);
+        matrix.postScale(width / 2000f, height / 2000f);
+        matrix.postTranslate(width / 2f, height / 2f);
+        matrix.invert(matrix);
+        matrix.mapRect(rectF);
+
+        return new Rect(Math.round(rectF.left), Math.round(rectF.top), Math.round(rectF.right), Math.round(rectF.bottom));
+    }
+
+    private int clamp(int x, int min, int max) {
+        if (x > max) {
+            return max;
+        }
+        if (x < min) {
+            return min;
+        }
+        return x;
+    }
+
+    /*private class DrawingView extends View {
+        boolean haveFace;
+        Paint paint;
+        boolean onTouch;
+        boolean focusFinished;
+        float x, y;
+
+        public DrawingView(Context mContext) {
+            super(mContext);
+            haveFace = false;
+            onTouch = false;
+            focusFinished = false;
+            paint = new Paint();
+            paint.setColor(Color.GREEN);
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setStrokeWidth(2);
+        }
+
+        public void setFocusFinished(boolean finished) {
+            this.focusFinished = finished;
+        }
+
+        public void setHaveFace(boolean haveFace) {
+            this.haveFace = haveFace;
+        }
+
+        public void setOnTouch(boolean onTouch) {
+            this.onTouch = onTouch;
+        }
+
+        public void setCoordinate(float x, float y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        @Override
+        protected void onDraw(Canvas canvas) {
+            if (haveFace) {
+                drawFaceRectangle(canvas);
+            }
+
+            if (onTouch) {
+                drawFocusCircle(canvas);
+            }
+
+        }
+
+        private void drawFocusCircle(Canvas canvas) {
+            if (focusFinished) {
+                paint.setColor(Color.BLUE);
+                Wait.miliSec(500);
+                paint.setColor(Color.TRANSPARENT);
+            } else {
+                paint.setColor(Color.WHITE);
+            }
+            canvas.drawCircle(x, y, 60, paint);
+
+        }
+
+        private void drawFaceRectangle(Canvas canvas) {
+            paint.setColor(Color.GREEN);
+            //Toa do cua driver camera trong may se nam trong khoang tu (-1000,-1000) to (1000,1000)
+            //Con toa do cua UI do ta design nam tu (0,0) den (width)
+
+            //Vi chung ta da xoay camera preview screen theo huong doc doc nen width thay doi thanh height va nguoc lai
+            int viewWidth = getHeight(); //width o day dc xet cho man hinh nam ngang, vd = 960
+            int viewHeight = getWidth(); //height o day dc xet cho man hinh nam ngang, vd = 750
+
+            for (int i = 0; i < detectedFaces.length; i++) {
+                //Xac dinh toa do hinh chu nhat nhan dien khuon mat, toa do nay o trong 1 o vuong [2000,2000]
+                int left = detectedFaces[i].rect.left;
+                int top = detectedFaces[i].rect.top;
+                int right = detectedFaces[i].rect.right;
+                int bottom = detectedFaces[i].rect.bottom;
+
+                //Chuyen toa do sang he toa do tuong ung voi kich thuoc cua man hinh preview cua chung ta
+                left = (left + 1000) * viewWidth / 2000;
+                top = (top + 1000) * viewHeight / 2000;
+                right = (right + 1000) * viewWidth / 2000;
+                bottom = (bottom + 1000) * viewHeight / 2000;
+                Log.d("DetectFace", " " + left + " " + top + " " + right + " " + bottom + " " + detectedFaces.length);
+
+                //Chuyen width height cua man hinh thanh thang dung.
+                int new_vWidth = viewHeight; //width o day cho man hinh thang dung vd = 720
+                int new_vHeight = viewWidth; //height o day cho man hinh nam ngang vd = 960
+
+                //Xoay cac toa do lai theo huong thang dung
+                int l = bottom;
+                int t = left;
+                int r = top;
+                int b = right;
+
+                //Chuyen goc toa do sang ben trai, vi khi xoay xong thi goc toa do dang nam ben phai
+                int new_left = new_vWidth - l;
+                int new_right = new_vWidth - r;
+                int new_top = t;
+                int new_bottom = b;
+
+                canvas.drawRect(new_left, new_top, new_right, new_bottom, paint);
+            }
+
+        }
+
+    }*/
+
+
 }

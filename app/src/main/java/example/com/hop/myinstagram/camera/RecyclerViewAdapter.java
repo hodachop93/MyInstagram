@@ -121,7 +121,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public static class FilterWayViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView img_preview;
         TextView title_filter;
-        //RelativeLayout container;
         ImageView indicator;
         private RecyclerViewClickListener listener;
 
@@ -140,7 +139,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             super(itemView);
             this.img_preview = (ImageView) itemView.findViewById(R.id.img_preview);
             this.title_filter = (TextView) itemView.findViewById(R.id.title_filter);
-            //this.container = (RelativeLayout) itemView.findViewById(R.id.card_view_container);
             this.indicator = (ImageView) itemView.findViewById(R.id.indicator);
             this.listener = listener;
 

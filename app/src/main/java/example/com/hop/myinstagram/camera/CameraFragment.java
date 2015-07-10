@@ -54,6 +54,7 @@ public class CameraFragment extends Fragment {
         }
     };
 
+
     private void resetCam() {
         mCamera.startPreview();
         mCameraPreview.setCamera(mCamera);
@@ -95,6 +96,12 @@ public class CameraFragment extends Fragment {
 
         ImageView left_navigation = (ImageView) rootView.findViewById(R.id.left_navigation);
         left_navigation.setImageResource(R.drawable.nav_cancel);
+        left_navigation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().onBackPressed();
+            }
+        });
 
         layout = (FrameLayout) rootView.findViewById(R.id.layout_camera);
 
@@ -147,6 +154,7 @@ public class CameraFragment extends Fragment {
             }
         });
 
+
         //Kiem tra tinh trang flash khi resume
         if (flashImgView.isSelected()){
             mCameraPreview.turnOnFlash();
@@ -178,6 +186,7 @@ public class CameraFragment extends Fragment {
         super.onPause();
         if (mCamera != null) {
             mCamera.stopPreview();
+            mCamera.stopFaceDetection();
             mCameraPreview.setCamera(null);
             mCamera.release();
             mCamera = null;
