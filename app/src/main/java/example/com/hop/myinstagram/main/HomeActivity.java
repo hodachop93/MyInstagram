@@ -1,10 +1,18 @@
 package example.com.hop.myinstagram.main;
 
 import android.app.Activity;
+import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import example.com.hop.myinstagram.R;
+import example.com.hop.myinstagram.home.HomeContentItem;
+import example.com.hop.myinstagram.home.HomeHeader;
+import example.com.hop.myinstagram.home.StickyHeaderAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 /**
@@ -12,18 +20,31 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
  */
 public class HomeActivity extends Activity {
     StickyListHeadersListView stickyList;
-    SwipeRefreshLayout swipeRefresh;
+    TextView txtViewLogo;
+    ImageView option;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
+        txtViewLogo = (TextView) findViewById(R.id.actionbar_title);
+        Typeface face = Typeface.createFromAsset(getAssets(), "fonts/billabong.ttf");
+        txtViewLogo.setTypeface(face);
+        option = (ImageView) findViewById(R.id.btnDirect);
+        option.setImageResource(R.drawable.icon_direct);
+        stickyList = (StickyListHeadersListView) findViewById(R.id.list);
 
-        stickyList = (StickyListHeadersListView) findViewById(R.id.content_home_sticky_header_lv);
-        swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.content_home_refresh_layout);
+        List<HomeHeader> headers = new ArrayList<>();
+        List<HomeContentItem> items = new ArrayList<>();
 
-        stickyList.addHeaderView(getLayoutInflater().inflate(R.layout.stickyheader_lv_header, null));
-        stickyList.addFooterView(getLayoutInflater().inflate(R.layout.stickyheader_lv_footer, null));
+        for (int i = 0; i < 10; i++) {
+            headers.add(new HomeHeader());
+            items.add(new HomeContentItem());
+        }
 
+        StickyHeaderAdapter adapter = new StickyHeaderAdapter(this, headers, items);
+        stickyList.setDrawingListUnderStickyHeader(true);
+        stickyList.setAreHeadersSticky(true);
+        stickyList.setAdapter(adapter);
 
     }
 }

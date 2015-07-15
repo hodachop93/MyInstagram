@@ -1,8 +1,38 @@
 <resources>
-    <string name="app_name">My Instagram</string>
+    <string name="app_name">HopNetWork</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="FOLLOWPEOPLE">FOLLOW PEOPLE</string>
+    <string name="FacebookFriends">Find Facebook Friends</string>
+    <string name="FindContacts">Find Contacts</string>
+    <string name="InviteFriends">Invite Friends</string>
+    <string name="ACCOUNT">ACCOUNT</string>
+    <string name="Editprofile">Edit profile</string>
+    <string name="ChangePassword">Change Password</string>
+    <string name="PostsYouveLiked">Posts You\'ve Liked</string>
+    <string name="PrivateAccount">Private Account</string>
+    <string name="Whenyouraccountisprivate">When your account is private, only people you approve can see your photos and videos. Your existing followers won\'t be affected.</string>
+    <string name="SETTINGS">SETTINGS</string>
+    <string name="LinkedAccounts">Linked Accounts</string>
+    <string name="PushNotifications">Push Notifications</string>
+    <string name="Camera">Camera</string>
+    <string name="CellularDataUse">Cellular Data Use</string>
+    <string name="SaveOriginalPhotos">Save Origions Photos</string>
+    <string name="SaveVideosAfterPosting">Save Videos After Posting</string>
+    <string name="Savingvideostoyourphone">Saving videos to your phone uses more storage space.</string>
+    <string name="SUPPORT">SUPPORT</string>
+    <string name="InstagramHelpCenter">Instagram Help Center</string>
+    <string name="ReportaProblem">Report a Problem</string>
+    <string name="ABOUT">ABOUT</string>
+    <string name="Ads">Ads</string>
+    <string name="Blog">Blog</string>
+    <string name="PrivacyPolicy">Privacy Policy</string>
+    <string name="TermsofService">Terms of Service</string>
+    <string name="OpenSourceLibraries">Open Source Libraries</string>
+    <string name="ClearSearchHistory">Clear Search History</string>
+    <string name="LogOut">Log Out</string>
+
     <string-array name="filter_array_titles">
         <item>Black</item>
         <item>Brightness</item>

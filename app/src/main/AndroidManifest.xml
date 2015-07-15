@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="example.com.hop.myinstagram">
 
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -19,7 +20,7 @@
         android:theme="@style/MyMaterialTheme"
         >
         <activity
-            android:name=".main.MainActivity"
+            android:name="example.com.hop.myinstagram.main.LoginActivity"
             android:label="@string/app_name"
             >
             <intent-filter>
@@ -29,12 +30,13 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".main.HomeActivity" />
-        <activity android:name=".main.SearchActivity" />
-        <activity android:name=".main.CameraActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".main.NewsActivity" />
-        <activity android:name=".main.ProfileActivity" />
-        <activity android:name=".camera.FilterPhotoActivity" android:screenOrientation="portrait"/>
+        <activity android:name="example.com.hop.myinstagram.main.MainActivity" />
+        <activity android:name="example.com.hop.myinstagram.main.HomeActivity" />
+        <activity android:name="example.com.hop.myinstagram.main.SearchActivity" />
+        <activity android:name="example.com.hop.myinstagram.main.CameraActivity" android:screenOrientation="portrait"/>
+        <activity android:name="example.com.hop.myinstagram.main.NewsActivity" />
+        <activity android:name="example.com.hop.myinstagram.main.ProfileActivity" />
+        <activity android:name="example.com.hop.myinstagram.camera.FilterPhotoActivity" android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

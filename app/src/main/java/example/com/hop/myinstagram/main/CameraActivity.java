@@ -1,9 +1,11 @@
 package example.com.hop.myinstagram.main;
 
 import android.hardware.Camera;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.view.View;
 
 import example.com.hop.myinstagram.R;
 import example.com.hop.myinstagram.utils.SlidingTabLayout;
@@ -18,6 +20,13 @@ public class CameraActivity extends FragmentActivity {
     ViewPager viewPager;
     ViewPagerAdapter viewPagerAdapter;
     SlidingTabLayout slideTabs;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        hideStatusBar();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,7 +56,24 @@ public class CameraActivity extends FragmentActivity {
 
     }
 
+    private void hideStatusBar() {
+        int uioption = getWindow().getDecorView().getSystemUiVisibility();
+        if (Build.VERSION.SDK_INT >= 14) {
+            uioption ^= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+        }
 
+        // Status bar hiding: Backwards compatible to Jellybean
+        if (Build.VERSION.SDK_INT >= 16) {
+            uioption ^= View.SYSTEM_UI_FLAG_FULLSCREEN;
+        }
+
+
+        if (Build.VERSION.SDK_INT >= 18) {
+            uioption ^= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        }
+
+        getWindow().getDecorView().setSystemUiVisibility(uioption);
+    }
 
 
 }
