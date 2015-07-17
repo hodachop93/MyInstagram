@@ -43,6 +43,9 @@ public class InstagramApp {
     private String mAccessToken;
     private Handler mHandler;
 
+    public InstagramApp() {
+    }
+
     public InstagramApp(Context context, String clientID, String clienSecret, String callbackUrl) {
         this.mContext = context;
         this.mClientID = clientID;
@@ -112,8 +115,11 @@ public class InstagramApp {
                     JSONObject jsonObj = new JSONObject(receivedStr);
                     mAccessToken = jsonObj.getString("access_token");
                     Log.d(TAG, mAccessToken);
-                    String username = jsonObj.getJSONObject("user").getString("username");
-                    mSession.storeAccessToken(username, mAccessToken);
+                    JSONObject jsonObjUser = jsonObj.getJSONObject("user");
+                    String username = jsonObjUser.getString("username");
+                    String userid = jsonObjUser.getString("id");
+                    String fullname = jsonObjUser.getString("full_name");
+                    mSession.storeAccessToken(username, mAccessToken, userid, fullname);
 
                 } catch (Exception ex) {
                     what = WHAT_ERROR;

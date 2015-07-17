@@ -14,15 +14,19 @@ public class InstagramSession {
     private static final String SHARED_PREF_NAME = "Instagram_Preferences";
     private static final String INSTAGRAM_USERNAME = "username";
     private static final String INSTAGRAM_ACCESS_TOKEN = "access_token";
+    private static final String INSTAGRAM_USERID="user_id";
+    private static final String INSTAGRAM_FULLNAME="full_name";
 
     public InstagramSession(Context mContext) {
         sharedPref = mContext.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         editor = sharedPref.edit();
     }
 
-    public void storeAccessToken(String username, String access_token) {
+    public void storeAccessToken(String username, String access_token,String userid, String fullname ) {
         editor.putString(INSTAGRAM_USERNAME, username);
         editor.putString(INSTAGRAM_ACCESS_TOKEN, access_token);
+        editor.putString(INSTAGRAM_USERID, userid);
+        editor.putString(INSTAGRAM_FULLNAME, fullname);
         //lenh commit de tien hanh luu trang thai
         editor.commit();
     }
@@ -39,5 +43,13 @@ public class InstagramSession {
 
     public String getAccessToken() {
         return sharedPref.getString(INSTAGRAM_ACCESS_TOKEN, null);
+    }
+
+    public String getInstagramUserID() {
+        return sharedPref.getString(INSTAGRAM_USERID, null);
+    }
+
+    public String getInstagramFullName() {
+        return sharedPref.getString(INSTAGRAM_FULLNAME, null);
     }
 }
