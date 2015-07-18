@@ -1,8 +1,6 @@
 package example.com.hop.myinstagram.model;
 
 
-import android.nfc.Tag;
-
 import java.util.List;
 
 /**
@@ -10,27 +8,38 @@ import java.util.List;
  * Store data from Instagram service
  */
 public class DataRoot {
-    private List<Tag> tags;
-    private Commnents commnents;
+    private List<String> tags;
+    private Comments comments;
     private Likes likes;
-    private Images images;
+    private Media images;
+    private String type;
+    private Media videos;
     private Caption caption;
     private User user;
+    private String created_time;
 
-    public List<Tag> getTags() {
+    public String getCreated_time() {
+        return created_time;
+    }
+
+    public void setCreated_time(String created_time) {
+        this.created_time = created_time;
+    }
+
+    public List<String> getTags() {
         return tags;
     }
 
-    public void setTags(List<Tag> tags) {
+    public void setTags(List<String> tags) {
         this.tags = tags;
     }
 
-    public Commnents getCommnents() {
-        return commnents;
+    public Comments getComments() {
+        return comments;
     }
 
-    public void setCommnents(Commnents commnents) {
-        this.commnents = commnents;
+    public void setComments(Comments commnents) {
+        this.comments = commnents;
     }
 
     public Likes getLikes() {
@@ -41,11 +50,27 @@ public class DataRoot {
         this.likes = likes;
     }
 
-    public Images getImages() {
+    public Media getImages() {
         return images;
     }
 
-    public void setImages(Images images) {
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public Media getVideos() {
+        return videos;
+    }
+
+    public void setVideos(Media videos) {
+        this.videos = videos;
+    }
+
+    public void setImages(Media images) {
         this.images = images;
     }
 

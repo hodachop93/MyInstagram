@@ -17,7 +17,7 @@
                 android:layout_height="wrap_content"
                 android:text="Instagram"
                 android:textColor="@color/White"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="4dp"
                 android:textSize="32sp"
                 android:layout_marginLeft="10dp"/>
         </RelativeLayout>

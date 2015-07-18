@@ -1,11 +1,22 @@
 package example.com.hop.myinstagram.model;
 
+import android.graphics.Bitmap;
+
 /**
  * Created by Hop on 15/07/2015.
  */
 public class User {
     private String username;
     private String profile_picture;
+    private Bitmap avatar;
+
+    public Bitmap getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(Bitmap avatar) {
+        this.avatar = avatar;
+    }
 
     public String getUsername() {
         return username;

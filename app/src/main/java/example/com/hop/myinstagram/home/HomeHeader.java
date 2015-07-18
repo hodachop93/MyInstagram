@@ -10,6 +10,12 @@ public class HomeHeader {
     private String name;
     private String time;
 
+    public HomeHeader(Bitmap avatar, String name, String time) {
+        this.avatar = avatar;
+        this.name = name;
+        this.time = time;
+    }
+
     public Bitmap getAvatar() {
         return avatar;
     }

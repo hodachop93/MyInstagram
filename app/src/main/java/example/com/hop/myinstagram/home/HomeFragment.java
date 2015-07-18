@@ -1,6 +1,5 @@
 package example.com.hop.myinstagram.home;
 
-import android.app.DownloadManager;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -19,16 +18,16 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.gson.Gson;
 
-import org.apache.http.protocol.RequestUserAgent;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import example.com.hop.myinstagram.R;
-import example.com.hop.myinstagram.login.InstagramApp;
 import example.com.hop.myinstagram.login.InstagramSession;
+import example.com.hop.myinstagram.model.DataRoot;
 import example.com.hop.myinstagram.model.RootInstagram;
+import example.com.hop.myinstagram.utils.AppController;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 /**
@@ -37,14 +36,14 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
  */
 public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     public final String TAG = this.getClass().getSimpleName();
-    public static final String URL_NEWS_FEED = "https://api.instagram.com/v1/users/{user-id}/?access_token=";
+    public static final String URL_NEWS_FEED = "https://api.instagram.com/v1/users/self/feed?access_token=";
     private StickyListHeadersListView mStickyLV;
     private TextView mTVLogo;
     private ImageView mImgOption;
     private SwipeRefreshLayout mSwipeRef;
 
-    private List<HomeHeader> mHeaders;
-    private List<HomeContentItem> mItems;
+    private List<DataRoot> mData;
+    private StickyHeaderAdapter mAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -66,18 +65,14 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 android.R.color.holo_orange_light);
 
         mSwipeRef.setOnRefreshListener(this);
-        mHeaders = new ArrayList<>();
-        mItems = new ArrayList<>();
+        mData = new ArrayList<DataRoot>();
+        mAdapter = new StickyHeaderAdapter(getActivity(), mData);
+        mStickyLV.setAdapter(mAdapter);
 
-        for (int i = 0; i < 10; i++) {
-            mHeaders.add(new HomeHeader());
-            mItems.add(new HomeContentItem());
-        }
-
-        StickyHeaderAdapter adapter = new StickyHeaderAdapter(getActivity(), mHeaders, mItems);
+        /*StickyHeaderAdapter adapter = new StickyHeaderAdapter(getActivity(), mHeaders, mItems);
         mStickyLV.setDrawingListUnderStickyHeader(true);
         mStickyLV.setAreHeadersSticky(true);
-        mStickyLV.setAdapter(adapter);
+        mStickyLV.setAdapter(adapter);*/
 
         /**
          * Showing Swipe Refresh animation on activity create
@@ -104,40 +99,42 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         }
     }
 
-    /* JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-         @Override
-         public void onResponse(JSONObject response) {
-             Log.d(TAG, response.toString());
-             notifyDataSetChanged(response.toString());
-             closeProgressDialog();
-         }
-     }, new Response.ErrorListener() {
-         @Override
-         public void onErrorResponse(VolleyError volleyError) {
-
-         }
-     });
-     AppController.getInstance().addToRequestQueue(jsonObjReq);*/
     private void makeJsonObjectRequest(String url) {
-        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 notifyDataSetChanged(response);
-                mSwipeRef.setRefreshing(false);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e(TAG, error.getMessage());
+                Log.e(TAG, (error.getMessage() != null) ? error.getMessage() : "Unknown error");
                 Toast.makeText(getActivity(), "Loading data from server unsuccessful", Toast.LENGTH_LONG).show();
             }
-        });
+        }) {
+
+        };
+
+        AppController.getInstance().addToRequestQueue(jsonObjReq);
     }
 
     private void notifyDataSetChanged(JSONObject response) {
-        RootInstagram rootIG = new Gson().fromJson(response.toString(), RootInstagram.class);
+        Log.d(TAG, response.toString());
+        String jsonStr = response.toString();
+        RootInstagram rootIG = new Gson().fromJson(jsonStr, RootInstagram.class);
+        int code = rootIG.getMeta().getCode();
+        if (code == 200){
+            if (mData.size() > 0){
+                mData.clear();
+            }
+            mData.addAll(rootIG.getData());
+            mAdapter.notifyDataSetChanged();
+            mSwipeRef.setRefreshing(false);
+        }else {
+            Toast.makeText(getActivity(), "Bad Request", Toast.LENGTH_LONG).show();
+        }
     }
-
 
     @Override
     public void onRefresh() {

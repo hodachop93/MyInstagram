@@ -1,6 +1,7 @@
 package example.com.hop.myinstagram.home;
 
 import android.content.Context;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,27 +10,34 @@ import android.widget.ImageView;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import example.com.hop.myinstagram.R;
+import example.com.hop.myinstagram.model.Comments;
+import example.com.hop.myinstagram.model.DataRoot;
+import example.com.hop.myinstagram.model.Likes;
+import example.com.hop.myinstagram.model.Media;
+import example.com.hop.myinstagram.model.User;
+import example.com.hop.myinstagram.utils.ImageLoader;
+import example.com.hop.myinstagram.utils.LinkedTextView;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
+
 
 /**
  * Created by Hop on 01/07/2015.
  */
 public class StickyHeaderAdapter extends BaseAdapter implements StickyListHeadersAdapter, SectionIndexer {
+    public static final int MAX_COMMENTS = 3;
     private Context mContext;
-    private List<HomeHeader> headers;
-    private List<HomeContentItem> items;
+    private List<DataRoot> mData;
+    private ImageLoader mImageLoader;
 
-    public StickyHeaderAdapter(Context mContext, List<HomeHeader> headers, List<HomeContentItem> items) {
-        this.mContext = mContext;
-        this.headers = headers;
-        this.items = items;
-    }
-
-    public StickyHeaderAdapter(Context mContext) {
-        this.mContext = mContext;
+    public StickyHeaderAdapter(Context context, List<DataRoot> data) {
+        this.mContext = context;
+        this.mData = data;
+        this.mImageLoader = new ImageLoader(mContext);
     }
 
     @Override
@@ -43,6 +51,7 @@ public class StickyHeaderAdapter extends BaseAdapter implements StickyListHeader
             //init XML
             headerVH.avatar = (ImageView) convertView.findViewById(R.id.home_header_avatar);
             headerVH.name = (TextView) convertView.findViewById(R.id.home_header_name);
+            headerVH.time = (TextView) convertView.findViewById(R.id.home_header_time);
 
             convertView.setTag(headerVH);
         } else {
@@ -60,7 +69,7 @@ public class StickyHeaderAdapter extends BaseAdapter implements StickyListHeader
 
     @Override
     public int getCount() {
-        return headers.size();
+        return mData.size();
     }
 
     @Override
@@ -83,6 +92,7 @@ public class StickyHeaderAdapter extends BaseAdapter implements StickyListHeader
             //init XML
             itemVH.image = (ImageView) convertView.findViewById(R.id.home_item_image);
             itemVH.likes = (TextView) convertView.findViewById(R.id.home_item_likes);
+            itemVH.comments = (TextView) convertView.findViewById(R.id.home_comment);
 
             convertView.setTag(itemVH);
         } else {
@@ -111,18 +121,63 @@ public class StickyHeaderAdapter extends BaseAdapter implements StickyListHeader
     private static class ItemViewHolder {
         ImageView image;
         TextView likes;
+        TextView comments;
     }
 
     private static class HeaderViewHolder {
         TextView name;
         ImageView avatar;
+        TextView time;
     }
 
     private void setValueHeader(HeaderViewHolder headerVH, int position) {
+        User user = mData.get(position).getUser();
+        headerVH.name.setText(user.getUsername());
+        headerVH.time.setText(convertTime(mData.get(position).getCreated_time()));
+        mImageLoader.DisplayImage(user.getProfile_picture(), headerVH.avatar);
+    }
 
+    private String convertTime(String created_time) {
+        //Get current time
+        Calendar calendar = Calendar.getInstance();
+        Date curDate = calendar.getTime();
+        long lCurTime = curDate.getTime();
+        long lServerTime = Long.parseLong(created_time) * 1000;
+        String time = (String) DateUtils.getRelativeTimeSpanString(lServerTime, lCurTime, DateUtils.MINUTE_IN_MILLIS, DateUtils.FORMAT_ABBREV_ALL);
+        return time;
     }
 
     private void setValueItem(ItemViewHolder itemVH, int position) {
+        DataRoot item = mData.get(position);
+        User user = item.getUser();
+        Likes likes = item.getLikes();
+        Media image = item.getImages();
+        Comments comments = item.getComments();
 
+        mImageLoader.DisplayImage(image.getStandard_resolution().getUrl(), itemVH.image);
+        itemVH.likes.setText(likes.getCount() + "");
+        // set value textview comments:
+        String contentOfTvComments = "<font color='gray'>Add a comment</font>";
+        String captionOfUser = "";
+        if (item.getCaption().getText() != null) {
+            String caption = item.getCaption().getText();
+            captionOfUser = "(user)" + user.getUsername() + "(/user) " + caption + "<br>";
+
+        }
+        if (comments.getCount() > 0) {
+            String countComments = ((comments.getCount() > MAX_COMMENTS) ?
+                    "<font color='gray'>View all " + comments.getCount() + "comments</font> <br>" : "");
+            String content_comment = "";
+            for (int i = 0; i < ((comments.getCount() > MAX_COMMENTS) ? MAX_COMMENTS : comments.getCount()); i++) {
+                String account = comments.getData().get(i).getFrom().getUsername();
+                String comment = comments.getData().get(i).getText();
+
+                content_comment += "(user)" + account + "(/user) " + comment + "<br>";
+            }
+            contentOfTvComments = countComments + content_comment + "<font color='gray'>Add a comment</font>";
+        }
+        contentOfTvComments = captionOfUser + contentOfTvComments;
+        // set text & event for tvComments
+        LinkedTextView.autoLink(itemVH.comments, contentOfTvComments, null);
     }
 }
