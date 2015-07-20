@@ -62,18 +62,7 @@ public class InstagramApp {
         mTokenUrl = TOKEN_URL + "?client_id=" + mClientID + "&client_secret="
                 + mClientSecret + "&redirect_uri=" + mCallbackUrl
                 + "&grant_type=authorization_code";
-        InstagramDialog.OAuthDialogListener ADListener = new InstagramDialog.OAuthDialogListener() {
-            @Override
-            public void onComplete(String code) {
-                getAccessToken(code);
-            }
 
-            @Override
-            public void onError(String error) {
-                mListener.onFail("Authorization failed");
-            }
-        };
-        mDialog = new InstagramDialog(mContext, mAuthUrl, ADListener);
         mProgressDialog = new ProgressDialog(mContext);
         mProgressDialog.setCancelable(false);
         mHandler = new Handler() {
@@ -133,6 +122,18 @@ public class InstagramApp {
     }
 
     public void authorize() {
+        InstagramDialog.OAuthDialogListener ADListener = new InstagramDialog.OAuthDialogListener() {
+            @Override
+            public void onComplete(String code) {
+                getAccessToken(code);
+            }
+
+            @Override
+            public void onError(String error) {
+                mListener.onFail("Authorization failed");
+            }
+        };
+        mDialog = new InstagramDialog(mContext, mAuthUrl, ADListener);
         mDialog.show();
     }
 

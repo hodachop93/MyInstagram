@@ -1,6 +1,8 @@
 package example.com.hop.myinstagram.camera;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.SensorManager;
@@ -31,7 +33,7 @@ public class CameraFragment extends Fragment {
     RelativeLayout cameraPreviewLayout;
     RelativeLayout shutterCamera;
     LinearLayout topbar;
-    ImageView changeCameraBtn, flashImgView;
+    ImageView flashImgView;
 
     private OrientationEventListener mOrientationEventListener;
     private int orientationOfImage;
@@ -40,7 +42,14 @@ public class CameraFragment extends Fragment {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
             //Goc ma anh can quay de tra lai dung huong
-            int rotation = orientationOfImage + CameraPreview.getOrientationOfCamera();
+            Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
+            int rotation;
+            if (bmp.getWidth() <bmp.getHeight()){
+                rotation = orientationOfImage + CameraPreview.getOrientationOfCamera() - 90;
+            }else{
+                rotation = orientationOfImage + CameraPreview.getOrientationOfCamera();
+            }
+
             saveImageTask(data, rotation);
             resetCam();
 
@@ -124,7 +133,6 @@ public class CameraFragment extends Fragment {
             }
         });
         mCamera = getCameraInstance();
-        mCamera.startPreview();
         mCameraPreview.setCamera(mCamera);
 
         mOrientationEventListener = new OrientationEventListener(getActivity(), SensorManager.SENSOR_DELAY_NORMAL) {
@@ -144,10 +152,10 @@ public class CameraFragment extends Fragment {
         flashImgView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (flashImgView.isSelected()){
+                if (flashImgView.isSelected()) {
                     flashImgView.setSelected(false);
                     mCameraPreview.turnOffFlash();
-                } else{
+                } else {
                     flashImgView.setSelected(true);
                     mCameraPreview.turnOnFlash();
                 }
@@ -156,10 +164,10 @@ public class CameraFragment extends Fragment {
 
 
         //Kiem tra tinh trang flash khi resume
-        if (flashImgView.isSelected()){
+        if (flashImgView.isSelected()) {
             mCameraPreview.turnOnFlash();
 
-        } else{
+        } else {
             mCameraPreview.turnOffFlash();
         }
     }
@@ -184,14 +192,6 @@ public class CameraFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        if (mCamera != null) {
-            mCamera.stopPreview();
-            mCamera.stopFaceDetection();
-            mCameraPreview.setCamera(null);
-            mCamera.release();
-            mCamera = null;
-        }
-        mOrientationEventListener.disable();
     }
 
     /**

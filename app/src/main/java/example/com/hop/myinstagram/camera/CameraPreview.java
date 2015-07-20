@@ -118,35 +118,37 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         mCameraPreview.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                drawingView.setOnTouch(true);
-                drawingView.setFocusFinished(false);
-                drawingView.setAfterFocus(false);
-                float x = event.getX();
-                float y = event.getY();
+                if (event.getAction() == MotionEvent.ACTION_UP){
+                    drawingView.setOnTouch(true);
+                    drawingView.setFocusFinished(false);
+                    drawingView.setAfterFocus(false);
+                    float x = event.getX();
+                    float y = event.getY();
 
-                mCamera.cancelAutoFocus();
+                    mCamera.cancelAutoFocus();
 
-                Rect focusRect = calculateTapArea(event.getX(), event.getY(), 1f);
-                Rect meteringRect = calculateTapArea(event.getX(), event.getY(), 1.5f);
+                    Rect focusRect = calculateTapArea(event.getX(), event.getY(), 1f);
+                    Rect meteringRect = calculateTapArea(event.getX(), event.getY(), 1.5f);
 
-                Camera.Parameters params = mCamera.getParameters();
+                    Camera.Parameters params = mCamera.getParameters();
 
-                List<Camera.Area> focusList = new ArrayList<Camera.Area>();
-                focusList.add(new Camera.Area(focusRect, 1000));
+                    List<Camera.Area> focusList = new ArrayList<Camera.Area>();
+                    focusList.add(new Camera.Area(focusRect, 1000));
 
-                List<Camera.Area> meteringList = new ArrayList<Camera.Area>();
-                meteringList.add(new Camera.Area(meteringRect, 1000));
+                    List<Camera.Area> meteringList = new ArrayList<Camera.Area>();
+                    meteringList.add(new Camera.Area(meteringRect, 1000));
 
-                params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
-                params.setFocusAreas(focusList);
-                params.setMeteringAreas(meteringList);
+                    params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+                    params.setFocusAreas(focusList);
+                    params.setMeteringAreas(meteringList);
 
-                mCamera.setParameters(params);
-                mCamera.autoFocus(autoFocusCallback);
+                    mCamera.setParameters(params);
+                    mCamera.autoFocus(autoFocusCallback);
 
-                drawingView.setCoordinate(x, y);
-                drawingView.invalidate();
-                return true;
+                    drawingView.setCoordinate(x, y);
+                    drawingView.invalidate();
+                }
+                    return true;
             }
         });
     }
@@ -217,6 +219,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         try {
             if (mCamera != null) {
                 mCamera.setPreviewDisplay(holder);
+                mCamera.startPreview();
                 setCameraDisplayOrientation((Activity) mContext, 0, mCamera);
                 getFlashSupported();
                 mCamera.setFaceDetectionListener(faceDetectionListener);
@@ -414,6 +417,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         if (mCamera != null) {
             mCamera.stopPreview();
             mCamera.stopFaceDetection();
+            mCamera.release();
         }
     }
 
@@ -477,111 +481,5 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         }
         return x;
     }
-
-    /*private class DrawingView extends View {
-        boolean haveFace;
-        Paint paint;
-        boolean onTouch;
-        boolean focusFinished;
-        float x, y;
-
-        public DrawingView(Context mContext) {
-            super(mContext);
-            haveFace = false;
-            onTouch = false;
-            focusFinished = false;
-            paint = new Paint();
-            paint.setColor(Color.GREEN);
-            paint.setStyle(Paint.Style.STROKE);
-            paint.setStrokeWidth(2);
-        }
-
-        public void setFocusFinished(boolean finished) {
-            this.focusFinished = finished;
-        }
-
-        public void setHaveFace(boolean haveFace) {
-            this.haveFace = haveFace;
-        }
-
-        public void setOnTouch(boolean onTouch) {
-            this.onTouch = onTouch;
-        }
-
-        public void setCoordinate(float x, float y) {
-            this.x = x;
-            this.y = y;
-        }
-
-        @Override
-        protected void onDraw(Canvas canvas) {
-            if (haveFace) {
-                drawFaceRectangle(canvas);
-            }
-
-            if (onTouch) {
-                drawFocusCircle(canvas);
-            }
-
-        }
-
-        private void drawFocusCircle(Canvas canvas) {
-            if (focusFinished) {
-                paint.setColor(Color.BLUE);
-                Wait.miliSec(500);
-                paint.setColor(Color.TRANSPARENT);
-            } else {
-                paint.setColor(Color.WHITE);
-            }
-            canvas.drawCircle(x, y, 60, paint);
-
-        }
-
-        private void drawFaceRectangle(Canvas canvas) {
-            paint.setColor(Color.GREEN);
-            //Toa do cua driver camera trong may se nam trong khoang tu (-1000,-1000) to (1000,1000)
-            //Con toa do cua UI do ta design nam tu (0,0) den (width)
-
-            //Vi chung ta da xoay camera preview screen theo huong doc doc nen width thay doi thanh height va nguoc lai
-            int viewWidth = getHeight(); //width o day dc xet cho man hinh nam ngang, vd = 960
-            int viewHeight = getWidth(); //height o day dc xet cho man hinh nam ngang, vd = 750
-
-            for (int i = 0; i < detectedFaces.length; i++) {
-                //Xac dinh toa do hinh chu nhat nhan dien khuon mat, toa do nay o trong 1 o vuong [2000,2000]
-                int left = detectedFaces[i].rect.left;
-                int top = detectedFaces[i].rect.top;
-                int right = detectedFaces[i].rect.right;
-                int bottom = detectedFaces[i].rect.bottom;
-
-                //Chuyen toa do sang he toa do tuong ung voi kich thuoc cua man hinh preview cua chung ta
-                left = (left + 1000) * viewWidth / 2000;
-                top = (top + 1000) * viewHeight / 2000;
-                right = (right + 1000) * viewWidth / 2000;
-                bottom = (bottom + 1000) * viewHeight / 2000;
-                Log.d("DetectFace", " " + left + " " + top + " " + right + " " + bottom + " " + detectedFaces.length);
-
-                //Chuyen width height cua man hinh thanh thang dung.
-                int new_vWidth = viewHeight; //width o day cho man hinh thang dung vd = 720
-                int new_vHeight = viewWidth; //height o day cho man hinh nam ngang vd = 960
-
-                //Xoay cac toa do lai theo huong thang dung
-                int l = bottom;
-                int t = left;
-                int r = top;
-                int b = right;
-
-                //Chuyen goc toa do sang ben trai, vi khi xoay xong thi goc toa do dang nam ben phai
-                int new_left = new_vWidth - l;
-                int new_right = new_vWidth - r;
-                int new_top = t;
-                int new_bottom = b;
-
-                canvas.drawRect(new_left, new_top, new_right, new_bottom, paint);
-            }
-
-        }
-
-    }*/
-
 
 }

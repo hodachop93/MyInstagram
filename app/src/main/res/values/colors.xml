@@ -155,4 +155,6 @@
     <color name="video_recorder_shutter_ring_pressed">#ff960b15</color>
     <color name="tab_indicator">#125688</color>
     <color name="bg_icon_direct">#0e3c5e</color>
+    <color name="themecamera">#26272c</color>
+    <color name="themecamera_pressed">#18191b</color>
 </resources>

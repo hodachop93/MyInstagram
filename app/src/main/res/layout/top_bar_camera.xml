@@ -10,8 +10,9 @@
         android:id="@+id/left_navigation"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:layout_gravity="center"
-        android:background="@android:color/transparent"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/white_arrow"
+        android:background="@drawable/selector_press_themeblack_icon"
         android:padding="6dp"
         />
 
@@ -35,9 +36,10 @@
     <ImageView
         android:id="@+id/right_navigation"
         android:layout_width="36dp"
-        android:layout_height="match_parent"
-        android:background="@android:color/transparent"
+        android:layout_height="36dp"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/selector_press_themeblack_icon"
         android:src="@drawable/blue_arrow"
-        android:visibility="invisible" />
+        android:visibility="gone" />
 
 </LinearLayout>

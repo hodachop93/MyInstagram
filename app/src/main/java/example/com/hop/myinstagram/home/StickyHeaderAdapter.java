@@ -93,7 +93,7 @@ public class StickyHeaderAdapter extends BaseAdapter implements StickyListHeader
             itemVH.image = (ImageView) convertView.findViewById(R.id.home_item_image);
             itemVH.likes = (TextView) convertView.findViewById(R.id.home_item_likes);
             itemVH.comments = (TextView) convertView.findViewById(R.id.home_comment);
-
+            itemVH.btnLike = (ImageView) convertView.findViewById(R.id.icon_like);
             convertView.setTag(itemVH);
         } else {
             itemVH = (ItemViewHolder) convertView.getTag();
@@ -119,7 +119,7 @@ public class StickyHeaderAdapter extends BaseAdapter implements StickyListHeader
     }
 
     private static class ItemViewHolder {
-        ImageView image;
+        ImageView image, btnLike;
         TextView likes;
         TextView comments;
     }
@@ -157,27 +157,34 @@ public class StickyHeaderAdapter extends BaseAdapter implements StickyListHeader
         mImageLoader.DisplayImage(image.getStandard_resolution().getUrl(), itemVH.image);
         itemVH.likes.setText(likes.getCount() + "");
         // set value textview comments:
-        String contentOfTvComments = "<font color='gray'>Add a comment</font>";
-        String captionOfUser = "";
-        if (item.getCaption().getText() != null) {
-            String caption = item.getCaption().getText();
-            captionOfUser = "(user)" + user.getUsername() + "(/user) " + caption + "<br>";
+        try {
+            String contentOfTvComments = "<font color='gray'>Add a comment</font>";
+            String captionOfUser = "";
+            if (item.getCaption() != null) {
+                String caption = item.getCaption().getText();
+                captionOfUser = "(user)" + user.getUsername() + "(/user) " + "<font color='black'>" + caption + "</font>" + "<br>";
 
-        }
-        if (comments.getCount() > 0) {
-            String countComments = ((comments.getCount() > MAX_COMMENTS) ?
-                    "<font color='gray'>View all " + comments.getCount() + "comments</font> <br>" : "");
-            String content_comment = "";
-            for (int i = 0; i < ((comments.getCount() > MAX_COMMENTS) ? MAX_COMMENTS : comments.getCount()); i++) {
-                String account = comments.getData().get(i).getFrom().getUsername();
-                String comment = comments.getData().get(i).getText();
-
-                content_comment += "(user)" + account + "(/user) " + comment + "<br>";
             }
-            contentOfTvComments = countComments + content_comment + "<font color='gray'>Add a comment</font>";
+            if (comments.getCount() > 0) {
+                String countComments = ((comments.getCount() > MAX_COMMENTS) ?
+                        "<font color='gray'>View all " + comments.getCount() + "comments</font> <br>" : "");
+                String content_comment = "";
+                for (int i = 0; i < ((comments.getCount() > MAX_COMMENTS) ? MAX_COMMENTS : comments.getCount()); i++) {
+                    String account = comments.getData().get(i).getFrom().getUsername();
+                    String comment = comments.getData().get(i).getText();
+
+                    content_comment += "(user)" + account + "(/user) " + "<font color='black'>" + comment + "</font>" + "<br>";
+                }
+                contentOfTvComments = countComments + content_comment + "<font color='gray'>Add a comment</font>";
+            }
+            contentOfTvComments = captionOfUser + contentOfTvComments;
+
+            // set text & event for tvComments
+            LinkedTextView.autoLink(itemVH.comments, contentOfTvComments, null);
+        } catch (NullPointerException ex){
+            ex.printStackTrace();
         }
-        contentOfTvComments = captionOfUser + contentOfTvComments;
-        // set text & event for tvComments
-        LinkedTextView.autoLink(itemVH.comments, contentOfTvComments, null);
+
+
     }
 }

@@ -3,11 +3,18 @@ package example.com.hop.myinstagram.main;
 import android.hardware.Camera;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import example.com.hop.myinstagram.R;
+import example.com.hop.myinstagram.camera.CameraFragment;
+import example.com.hop.myinstagram.camera.GalleryFragment;
+import example.com.hop.myinstagram.camera.VideoFragment;
 import example.com.hop.myinstagram.utils.SlidingTabLayout;
 import example.com.hop.myinstagram.utils.ViewPagerAdapter;
 
@@ -20,11 +27,11 @@ public class CameraActivity extends FragmentActivity {
     ViewPager viewPager;
     ViewPagerAdapter viewPagerAdapter;
     SlidingTabLayout slideTabs;
+    private List<Fragment> fragments;
 
     @Override
     protected void onResume() {
         super.onResume();
-        hideStatusBar();
     }
 
     @Override
@@ -37,8 +44,11 @@ public class CameraActivity extends FragmentActivity {
         slideTabs = (SlidingTabLayout) findViewById(R.id.camera_sliding_tab);
 
         CharSequence[] titles = {"GALLERY", "PHOTO", "VIDEO"};
-
-        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), titles);
+        fragments = new ArrayList<Fragment>();
+        fragments.add(new GalleryFragment());
+        fragments.add(new CameraFragment());
+        fragments.add(new VideoFragment());
+        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), titles, fragments);
         viewPager.setAdapter(viewPagerAdapter);
 
         slideTabs.setDistributeEvenly(true);
@@ -50,8 +60,10 @@ public class CameraActivity extends FragmentActivity {
                 return getResources().getColor(R.color.tab_indicator);
             }
         });
+        slideTabs.setmTabStripColorID(R.color.tab_strip_selector_camera);
 
         slideTabs.setViewPager(viewPager);
+        //hideStatusBar();
 
 
     }

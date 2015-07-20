@@ -1,9 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    >
-    <include layout="@layout/search_row"/>
+    android:orientation="vertical">
+
+    <include layout="@layout/search_row" />
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/search_swRef"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <GridView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/search_gridview"
+            android:numColumns="3">
+
+        </GridView>
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 
-</RelativeLayout>
+</LinearLayout>

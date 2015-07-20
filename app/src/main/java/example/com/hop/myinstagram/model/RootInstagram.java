@@ -8,7 +8,15 @@ import java.util.List;
 public class RootInstagram {
     private Meta meta;
     private List<DataRoot> data;
+    private Pagination pagination;
 
+    public Pagination getPagination() {
+        return pagination;
+    }
+
+    public void setPagination(Pagination pagination) {
+        this.pagination = pagination;
+    }
     public Meta getMeta() {
         return meta;
     }

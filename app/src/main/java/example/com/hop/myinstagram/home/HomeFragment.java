@@ -1,13 +1,17 @@
 package example.com.hop.myinstagram.home;
 
+import android.app.ProgressDialog;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,7 +38,7 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
  * Class Home Fragment
  * Created by hodachop93 on 17/07/2015.
  */
-public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
     public final String TAG = this.getClass().getSimpleName();
     public static final String URL_NEWS_FEED = "https://api.instagram.com/v1/users/self/feed?access_token=";
     private StickyListHeadersListView mStickyLV;
@@ -44,14 +48,26 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     private List<DataRoot> mData;
     private StickyHeaderAdapter mAdapter;
+    private int mPrevLast = 0;
+    private RootInstagram mRootIG;
+    private ProgressDialog mProDialog;
+    private boolean mIsSwRef;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.home_fragment, container, false);
         createView(rootView);
+        mProDialog = new ProgressDialog(getActivity());
+        mProDialog.setCancelable(false);
         return rootView;
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mData = new ArrayList<DataRoot>();
+        mAdapter = new StickyHeaderAdapter(getActivity(), mData);
+    }
 
     private void createView(View rootView) {
         mTVLogo = (TextView) rootView.findViewById(R.id.actionbar_title);
@@ -61,12 +77,12 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         mImgOption.setImageResource(R.drawable.icon_direct);
         mStickyLV = (StickyListHeadersListView) rootView.findViewById(R.id.list);
         mSwipeRef = (SwipeRefreshLayout) rootView.findViewById(R.id.srfContainer);
-        mSwipeRef.setColorSchemeColors(android.R.color.holo_blue_bright, android.R.color.holo_green_light,
-                android.R.color.holo_orange_light);
+        mSwipeRef.setColorScheme(android.R.color.holo_blue_bright, android.R.color.holo_green_light,
+                android.R.color.holo_orange_light, android.R.color.holo_red_light);
+        mImgOption.setOnClickListener(this);
 
         mSwipeRef.setOnRefreshListener(this);
-        mData = new ArrayList<DataRoot>();
-        mAdapter = new StickyHeaderAdapter(getActivity(), mData);
+
         mStickyLV.setAdapter(mAdapter);
 
         /*StickyHeaderAdapter adapter = new StickyHeaderAdapter(getActivity(), mHeaders, mItems);
@@ -81,19 +97,48 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         mSwipeRef.post(new Runnable() {
             @Override
             public void run() {
-                mSwipeRef.setRefreshing(true);
-                fetchData();
+                if (mData.size() == 0) {
+                    mSwipeRef.setRefreshing(true);
+                    mIsSwRef = true;
+                    fetchData();
+                }
+
             }
         });
+
+        mStickyLV.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                final int lastItem = firstVisibleItem + visibleItemCount;
+                if (lastItem == totalItemCount) {
+                    if (mPrevLast != lastItem) {
+                        //Loading more data if possible
+                        if (mRootIG.getPagination()!=null){
+                            mPrevLast=lastItem;
+                            loadingMoreData();
+                        }
+                    }
+                }
+
+            }
+        });
+    }
+
+    private void loadingMoreData() {
+        mProDialog.show();
+        makeJsonObjectRequest(mRootIG.getPagination().getNext_url());
     }
 
     private void fetchData() {
         InstagramSession igSess = new InstagramSession(getActivity());
         if (igSess.getAccessToken() != null) {
-            mSwipeRef.setRefreshing(true);
             String url = URL_NEWS_FEED + igSess.getAccessToken();
             makeJsonObjectRequest(url);
-
         } else {
             Toast.makeText(getActivity(), "Cannot get my access token", Toast.LENGTH_LONG);
         }
@@ -102,15 +147,16 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private void makeJsonObjectRequest(String url) {
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                notifyDataSetChanged(response);
-            }
-        }, new Response.ErrorListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        notifyDataSetChanged(response);
+                    }
+                }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.e(TAG, (error.getMessage() != null) ? error.getMessage() : "Unknown error");
-                Toast.makeText(getActivity(), "Loading data from server unsuccessful", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Can't connect right now", Toast.LENGTH_SHORT).show();
+                mSwipeRef.setRefreshing(false);
             }
         }) {
 
@@ -120,18 +166,19 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     private void notifyDataSetChanged(JSONObject response) {
-        Log.d(TAG, response.toString());
         String jsonStr = response.toString();
-        RootInstagram rootIG = new Gson().fromJson(jsonStr, RootInstagram.class);
-        int code = rootIG.getMeta().getCode();
-        if (code == 200){
-            if (mData.size() > 0){
-                mData.clear();
-            }
-            mData.addAll(rootIG.getData());
+        mRootIG = new Gson().fromJson(jsonStr, RootInstagram.class);
+        int code = mRootIG.getMeta().getCode();
+        if (code == 200) {
+            mData.addAll(mRootIG.getData());
             mAdapter.notifyDataSetChanged();
-            mSwipeRef.setRefreshing(false);
-        }else {
+            if (mIsSwRef){
+                mSwipeRef.setRefreshing(false);
+                mIsSwRef=false;
+            }else{
+                mProDialog.dismiss();
+            }
+        } else {
             Toast.makeText(getActivity(), "Bad Request", Toast.LENGTH_LONG).show();
         }
     }
@@ -139,5 +186,20 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     @Override
     public void onRefresh() {
         fetchData();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onClick(View v) {
+        FragmentManager fragManager = getFragmentManager();
+        FragmentTransaction transaction = fragManager.beginTransaction();
+        DirectFragment f = new DirectFragment();
+        transaction.replace(getId(), f);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 }

@@ -3,7 +3,6 @@ package example.com.hop.myinstagram.camera;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.widget.ImageView;
 
@@ -13,14 +12,14 @@ import example.com.hop.myinstagram.utils.ImageFilters;
  * Created by Hop on 07/07/2015.
  */
 public class ApplyEffectImageTask extends AsyncTask<Integer, Bitmap, Void> {
-    final int EFFECT_COLOR_BLACK = 0;
+    final int EFFECT_INVERT = 0;
     final int EFFECT_BRIGHTNESS = 1;
-    final int EFFECT_COLOR_RED = 2;
-    final int EFFECT_COLOR_GREEN = 3;
-    final int EFFECT_COLOR_BLUE = 4;
+    final int EFFECT_SNOW = 2;
+    final int EFFECT_REFLECT = 3;
+    final int EFFECT_BOOTS = 4;
     final int EFFECT_GRAYSCALE = 5;
     final int EFFECT_CONTRAST = 6;
-    final int EFFECT_ROUND_CORNER = 7;
+    final int EFFECT_TINT = 7;
     final int EFFECT_WATERMARK = 8;
 
     private Activity mActivity;
@@ -53,32 +52,32 @@ public class ApplyEffectImageTask extends AsyncTask<Integer, Bitmap, Void> {
         Bitmap bmp = null;
         ImageFilters filter = new ImageFilters();
         switch (effectType) {
-            case EFFECT_COLOR_BLACK:
-                bmp = filter.applyBlackFilter(src);
+            case EFFECT_INVERT:
+                bmp = filter.applyInvertEffect(src);
                 break;
             case EFFECT_BRIGHTNESS:
-                bmp = filter.applyBrightnessEffect(src, 80);
+                bmp=filter.applyBrightnessEffect(src, 80);
                 break;
-            case EFFECT_COLOR_RED:
-                bmp = filter.applyColorFilterEffect(src, 255, 0, 0);
+            case EFFECT_SNOW:
+                bmp=filter.applySnowEffect(src);
                 break;
-            case EFFECT_COLOR_GREEN:
-                bmp = filter.applyColorFilterEffect(src, 0, 255, 0);
+            case EFFECT_REFLECT:
+                bmp=filter.applyReflection(src);
                 break;
-            case EFFECT_COLOR_BLUE:
-                bmp = filter.applyColorFilterEffect(src, 0, 0, 255);
+            case EFFECT_BOOTS:
+                bmp=filter.applyBoostEffect(src, 1, 20);
                 break;
             case EFFECT_GRAYSCALE:
-                bmp = filter.applyGrayscaleEffect(src);
+                bmp=filter.applyGrayscaleEffect(src);
                 break;
             case EFFECT_CONTRAST:
-                bmp = filter.applyContrastEffect(src, 70);
+                bmp=filter.applyContrastEffect(src, 70);
                 break;
-            case EFFECT_ROUND_CORNER:
-                bmp = filter.applyRoundCornerEffect(src, 45);
+            case EFFECT_TINT:
+                bmp=filter.applyTintEffect(src, 45);
                 break;
             case EFFECT_WATERMARK:
-                bmp = filter.applyWaterMarkEffect(src, "hodachop", 200, 200, Color.GREEN, 80, 24, false);
+                bmp=filter.applyWaterMarkEffect(src, "", 200, 200, 128, 80, 24, false);
                 break;
         }
         return bmp;

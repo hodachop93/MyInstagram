@@ -15,8 +15,6 @@ import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import example.com.hop.myinstagram.R;
-
 
 public class SlidingTabLayout extends HorizontalScrollView {
 
@@ -29,6 +27,10 @@ public class SlidingTabLayout extends HorizontalScrollView {
         int getIndicatorColor(int position);
 
     }
+
+    private int mTabStripColorID;
+
+
 
     private static final int TITLE_OFFSET_DIPS = 24;
     private static final int TAB_VIEW_PADDING_DIPS = 16;
@@ -192,7 +194,7 @@ public class SlidingTabLayout extends HorizontalScrollView {
                 tabView.setSelected(true);
             }
 
-            tabTitleView.setTextColor(getResources().getColorStateList(R.color.tab_strip_selector));
+            tabTitleView.setTextColor(getResources().getColorStateList(mTabStripColorID));
             tabTitleView.setTextSize(14);
         }
     }
@@ -289,5 +291,7 @@ public class SlidingTabLayout extends HorizontalScrollView {
             }
         }
     }
-
+    public void setmTabStripColorID(int mTabStripColorID) {
+        this.mTabStripColorID = mTabStripColorID;
+    }
 }

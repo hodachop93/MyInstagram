@@ -34,7 +34,14 @@ public class OptionsFragment extends Fragment {
         btnLogout = (RelativeLayout) rootView.findViewById(R.id.btnLogOutOption);
 
         toolbar.setBackgroundColor(getResources().getColor(R.color.tab_indicator));
-        left_navigation.setBackgroundResource(R.drawable.white_arrow);
+        left_navigation.setImageResource(R.drawable.white_arrow);
+        left_navigation.setBackgroundResource(R.drawable.selector_press_themeblue_icon);
+        left_navigation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().onBackPressed();
+            }
+        });
         title.setText("Options");
         return rootView;
     }

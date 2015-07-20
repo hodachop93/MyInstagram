@@ -17,7 +17,7 @@
                 android:layout_height="wrap_content"
                 android:text="Instagram"
                 android:textColor="@color/White"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="6dp"
                 android:textSize="32sp"
                 android:layout_marginLeft="10dp"/>
         </RelativeLayout>
@@ -28,6 +28,7 @@
             android:layout_alignParentRight="true"
             android:layout_height="match_parent"
             android:layout_centerInParent="true"
+              android:background="@drawable/selector_press_themeblue_icon"
             android:scaleType="center"
             />
     </RelativeLayout>

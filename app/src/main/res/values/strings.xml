@@ -32,16 +32,17 @@
     <string name="OpenSourceLibraries">Open Source Libraries</string>
     <string name="ClearSearchHistory">Clear Search History</string>
     <string name="LogOut">Log Out</string>
+    <string name="activity_direct_send">Send photos and videos directly to your friends. Only the people you send to can see these posts.</string>
 
     <string-array name="filter_array_titles">
-        <item>Black</item>
+        <item>Invert</item>
         <item>Brightness</item>
-        <item>Red</item>
-        <item>Green</item>
-        <item>Blue</item>
+        <item>Snow</item>
+        <item>Reflect</item>
+        <item>Boost</item>
         <item>Grayscale</item>
         <item>Contrast</item>
-        <item>Round Corner</item>
+        <item>Tint</item>
         <item>Water Mark</item>
       </string-array>
 </resources>
