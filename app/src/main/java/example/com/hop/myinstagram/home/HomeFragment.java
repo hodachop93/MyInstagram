@@ -53,6 +53,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private ProgressDialog mProDialog;
     private boolean mIsSwRef;
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.home_fragment, container, false);
@@ -118,8 +119,8 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 if (lastItem == totalItemCount) {
                     if (mPrevLast != lastItem) {
                         //Loading more data if possible
-                        if (mRootIG.getPagination()!=null){
-                            mPrevLast=lastItem;
+                        if (mRootIG.getPagination() != null) {
+                            mPrevLast = lastItem;
                             loadingMoreData();
                         }
                     }
@@ -132,6 +133,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private void loadingMoreData() {
         mProDialog.show();
         makeJsonObjectRequest(mRootIG.getPagination().getNext_url());
+        mIsSwRef = false;
     }
 
     private void fetchData() {
@@ -170,14 +172,17 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         mRootIG = new Gson().fromJson(jsonStr, RootInstagram.class);
         int code = mRootIG.getMeta().getCode();
         if (code == 200) {
-            mData.addAll(mRootIG.getData());
-            mAdapter.notifyDataSetChanged();
-            if (mIsSwRef){
+
+
+            if (mIsSwRef) {
+                mData.clear();
+                mData.addAll(mRootIG.getData());
                 mSwipeRef.setRefreshing(false);
-                mIsSwRef=false;
-            }else{
+            } else {
+                mData.addAll(mRootIG.getData());
                 mProDialog.dismiss();
             }
+            mAdapter.notifyDataSetChanged();
         } else {
             Toast.makeText(getActivity(), "Bad Request", Toast.LENGTH_LONG).show();
         }
@@ -185,6 +190,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     @Override
     public void onRefresh() {
+        mIsSwRef = true;
         fetchData();
     }
 

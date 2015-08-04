@@ -94,6 +94,7 @@ public class StickyHeaderAdapter extends BaseAdapter implements StickyListHeader
             itemVH.likes = (TextView) convertView.findViewById(R.id.home_item_likes);
             itemVH.comments = (TextView) convertView.findViewById(R.id.home_comment);
             itemVH.btnLike = (ImageView) convertView.findViewById(R.id.icon_like);
+            itemVH.imgPlayVideo = (ImageView) convertView.findViewById(R.id.home_img_play_video);
             convertView.setTag(itemVH);
         } else {
             itemVH = (ItemViewHolder) convertView.getTag();
@@ -119,7 +120,7 @@ public class StickyHeaderAdapter extends BaseAdapter implements StickyListHeader
     }
 
     private static class ItemViewHolder {
-        ImageView image, btnLike;
+        ImageView image, btnLike, imgPlayVideo;
         TextView likes;
         TextView comments;
     }
@@ -149,14 +150,35 @@ public class StickyHeaderAdapter extends BaseAdapter implements StickyListHeader
 
     private void setValueItem(ItemViewHolder itemVH, int position) {
         DataRoot item = mData.get(position);
-        User user = item.getUser();
+
+
+
+        //set value for image, check if it is video, enable play video icon
+        setValueImage(itemVH, item);
+
+
+        // set value textview comments
+        setValueTextViewComments(itemVH, item);
+
+
+    }
+
+    private void setValueImage(ItemViewHolder itemVH, DataRoot item) {
         Likes likes = item.getLikes();
         Media image = item.getImages();
-        Comments comments = item.getComments();
-
         mImageLoader.DisplayImage(image.getStandard_resolution().getUrl(), itemVH.image);
         itemVH.likes.setText(likes.getCount() + "");
-        // set value textview comments:
+        if (item.getType().equals("video")){
+            itemVH.imgPlayVideo.setVisibility(View.VISIBLE);
+        }else if (item.getType().equals("image")){
+            itemVH.imgPlayVideo.setVisibility(View.GONE);
+        }
+    }
+
+    private void setValueTextViewComments(ItemViewHolder itemVH, DataRoot item) {
+        User user = item.getUser();
+        Comments comments = item.getComments();
+
         try {
             String contentOfTvComments = "<font color='gray'>Add a comment</font>";
             String captionOfUser = "";
@@ -181,10 +203,8 @@ public class StickyHeaderAdapter extends BaseAdapter implements StickyListHeader
 
             // set text & event for tvComments
             LinkedTextView.autoLink(itemVH.comments, contentOfTvComments, null);
-        } catch (NullPointerException ex){
+        } catch (NullPointerException ex) {
             ex.printStackTrace();
         }
-
-
     }
 }

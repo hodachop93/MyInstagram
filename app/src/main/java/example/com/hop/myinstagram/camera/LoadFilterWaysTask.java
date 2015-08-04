@@ -102,17 +102,6 @@ public class LoadFilterWaysTask extends AsyncTask<Bitmap, Void, Void> {
         return scaled_bmp;
     }
 
-    private void getData() {
-        TypedArray images_preview = activity.getResources().obtainTypedArray(R.array.filter_array_preview);
-        String[] titles = activity.getResources().getStringArray(R.array.filter_array_titles);
-
-        int size = images_preview.length();
-        for (int i = 0; i < size; i++) {
-            Bitmap bmp = BitmapFactory.decodeResource(activity.getResources(), images_preview.getResourceId(i, -1));
-            FilterWay way = new FilterWay(bmp, titles[i]);
-            filterWays.add(way);
-        }
-    }
 
     @Override
     protected void onPostExecute(Void aVoid) {

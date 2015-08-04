@@ -3,9 +3,10 @@ package example.com.hop.myinstagram.utils;
 import android.content.Context;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FileCache {
-    
     private File cacheDir;
     
     public FileCache(Context context){
